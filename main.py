@@ -19,17 +19,22 @@ async def index(websocket, path: str):
 
                 # create new user account
                 if path == "/":
-                    await RoomAccount(user_profile).authenticate()
+                    result = await RoomAccount(user_profile).authenticate()
+                    await websocket.send(str(result))
+
                 elif path == "/signup":
                     result = await RoomAccount(user_profile).create()
-                    print(result)
+                    await websocket.send(str(result))
+
                 elif path == "/signin":
                     await RoomAccount(user_profile).authenticate()
+
                 elif path == "/deactivate":
                     result = await RoomAccount(user_profile).deactivate()
-                    print(result)
+                    await websocket.send(str(result))
+
                 else:
-                    print('we dont know what you want')
+                    await websocket.send('Unknown path!')
 
             # if data is not type(dict)
             except json.decoder.JSONDecodeError as error:
