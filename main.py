@@ -46,8 +46,10 @@ async def index(websocket, path: str):
                         # restore root directory
                         os.chdir(root_dir)
                     # send users to client
-                    await websocket.send(str(users_from_all_databases))
-
+                    if users_from_all_databases:
+                        await websocket.send(str(users_from_all_databases))
+                    else:
+                        await websocket.send('No user found')
                 # create new account
                 elif path == "/signup":
                     result = await RoomAccount(user_profile).create()
