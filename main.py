@@ -49,7 +49,7 @@ async def index(websocket, path: str):
 
                 # unrecognized path / route
                 else:
-                    await websocket.send('Unknown address! User \'/\' instead.')
+                    await websocket.send('Unknown address! RoomUser \'/\' instead.')
                     await websocket.close()
 
             # if data is not type(dict)
