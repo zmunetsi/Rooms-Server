@@ -16,7 +16,7 @@ async def index(websocket, path: str):
                 json_response: dict = json.loads(data)
 
                 # specific user data
-                user_device = json_response['device']
+                user_device: dict = json_response['device']
                 user_profile: dict = json_response['profile']
 
                 # confirm user account security
@@ -35,7 +35,7 @@ async def index(websocket, path: str):
                     await websocket.send(str(result))
 
                 # sign in to account
-                elif path == "/signin":
+                elif path == "/login":
                     await RoomAccount(user_profile).authenticate()
 
                 # pend deactivate account
@@ -70,7 +70,7 @@ async def rooms_server():
 # exec application
 if __name__ == '__main__':
     try:
-        print(f'[Rooms]: Listening on (ws://{HOST}:{PORT}) OS:{sys.platform}.')
+        print(f'[Rooms]: ws://{HOST}:{PORT}/ OS:{sys.platform}.')
         asyncio.run(rooms_server())
     except KeyboardInterrupt:
         print('[Rooms]: Server forced to stop.')
