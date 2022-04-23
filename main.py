@@ -109,6 +109,11 @@ async def index(websocket, path: str):
                         elif path == f"/{user_profile['username']}/room/update":
                             room_response = Rooms(user_profile, json_response['room']).update_room()
                             await websocket.send(room_response)
+                        elif path == f"/{user_profile['username']}/room/":
+                            room_response = Rooms(user_profile, json_response['room']).get_rooms()
+                            await websocket.send(str(room_response))
+                        else:
+                            pass
                     else:
                         await websocket.send(str(authentication_result))
                 # ___________room traffic_____________

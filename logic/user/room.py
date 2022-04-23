@@ -40,6 +40,16 @@ class Rooms:
             if database.get(Query().id == self.id):
                 database.remove(Query().id == self.id)
                 database.insert(self.room)
-                return f'Room update'
+                return f'Room updated'
+            else:
+                return f'Room does not exist'
+
+    def get_rooms(self):
+        if os.path.isfile(self.database_file):
+            database = TinyDB(self.database_file).table('rooms')
+            # check for room existence
+            if database.get(Query().id == self.id):
+                rooms = database.all()
+                return rooms
             else:
                 return f'Room does not exist'
