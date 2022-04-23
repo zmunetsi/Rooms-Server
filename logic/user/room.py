@@ -48,8 +48,8 @@ class Rooms:
         if os.path.isfile(self.database_file):
             database = TinyDB(self.database_file).table('rooms')
             # check for room existence
-            if database.get(Query().id == self.id):
+            if database.all():
                 rooms = database.all()
                 return rooms
             else:
-                return f'Room does not exist'
+                return f'No room exists'
