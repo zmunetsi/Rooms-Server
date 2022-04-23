@@ -83,7 +83,7 @@ class RoomAccount:
                 return 'Account does not exist'
 
     # pend account for deactivation
-    async def deactivate(self):
+    async def delete(self):
         # confirm user security
         if os.path.exists(self.account_directory):
             # confirm user security
