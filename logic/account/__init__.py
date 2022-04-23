@@ -7,6 +7,7 @@ import ast
 import sys
 import os
 import shutil
+from zipfile import ZipFile
 
 # modules
 from logic import *

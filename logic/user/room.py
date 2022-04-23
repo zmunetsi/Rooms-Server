@@ -2,19 +2,17 @@ from .__init__ import *
 
 
 # application user
-class Room:
-    """
-    Rooms manipulation class.
+class Rooms:
 
-    * profile - Login profile.
-    * target_account - Room user account
-    """
     def __init__(self, profile: dict, target_account: dict):
         self.profile = profile
         self.target_account = target_account
 
-    def new(self):
+    def new_room(self):
         pass
 
-    def privacy(self):
+    def delete_room(self):
+        pass
+
+    def update_room(self):
         pass

@@ -16,7 +16,7 @@ async def index(websocket, path: str):
                 json_response: dict = json.loads(data)
 
                 # specific user data
-                user_device: dict = json_response['device']
+                user_device = json_response['device']
                 user_profile: dict = json_response['profile']
 
                 # confirm user account security
@@ -35,7 +35,7 @@ async def index(websocket, path: str):
                     await websocket.send(str(result))
 
                 # sign in to account
-                elif path == "/login":
+                elif path == "/signin":
                     await RoomAccount(user_profile).authenticate()
 
                 # pend deactivate account
@@ -47,9 +47,19 @@ async def index(websocket, path: str):
                     else:
                         await websocket.send(str(result))
 
+                # ___________room traffic_____________
+                elif path == f"/user/{user_profile['username']}/room":
+                    authentication_result = await RoomAccount(user_profile).deactivate()
+                    if 'does not exist' in authentication_result:
+                        await websocket.send(str(result))
+                        await websocket.close()
+                    else:
+                        await websocket.send(str(result))
+                # ___________room traffic_____________
+
                 # unrecognized path / route
                 else:
-                    await websocket.send('Unknown address! RoomUser \'/\' instead.')
+                    await websocket.send('Unknown address! Use \'/\' instead.')
                     await websocket.close()
 
             # if data is not type(dict)
@@ -70,7 +80,7 @@ async def rooms_server():
 # exec application
 if __name__ == '__main__':
     try:
-        print(f'[Rooms]: ws://{HOST}:{PORT}/ OS:{sys.platform}.')
+        print(f'[Rooms]: Listening on (ws://{HOST}:{PORT}) OS:{sys.platform}.')
         asyncio.run(rooms_server())
     except KeyboardInterrupt:
         print('[Rooms]: Server forced to stop.')
