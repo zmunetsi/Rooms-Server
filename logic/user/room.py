@@ -4,15 +4,20 @@ from .__init__ import *
 # application user
 class Rooms:
 
-    def __init__(self, profile: dict, target_account: dict):
-        self.profile = profile
-        self.target_account = target_account
+    def __init__(self, user: dict, room_content: dict):
+        self.user: dict = user
+        self.room: dict = room_content
+        self.id: str = room_content['id']
+        self.room_author: str = room_content['author']
+
+        # user "rooms" database instance
+        self.database = TinyDB(f'{self.user["email"]}').table('rooms')
 
     def new_room(self):
-        pass
+        self.database.insert(self.room)
 
     def delete_room(self):
-        pass
+        self.database.remove(Query().matches())
 
     def update_room(self):
         pass
