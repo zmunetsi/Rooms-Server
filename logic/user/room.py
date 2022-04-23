@@ -16,11 +16,30 @@ class Rooms:
     def new_room(self):
         if os.path.isfile(self.database_file):
             database = TinyDB(self.database_file).table('rooms')
-            database.insert(self.room)
-            return 'Room generated'
+            # check for room existence
+            if database.get(Query().id == self.id):
+                return f'Room exists'
+            else:
+                database.insert(self.room)
+                return f'Room generated'
 
     def delete_room(self):
-        self.database.remove(Query().id == self.id)
+        if os.path.isfile(self.database_file):
+            database = TinyDB(self.database_file).table('rooms')
+            # check for room existence
+            if database.get(Query().id == self.id):
+                database.remove(Query().id == self.id)
+                return f'Room deleted'
+            else:
+                return f'Room does not exist'
 
     def update_room(self):
-        pass
+        if os.path.isfile(self.database_file):
+            database = TinyDB(self.database_file).table('rooms')
+            # check for room existence
+            if database.get(Query().id == self.id):
+                database.remove(Query().id == self.id)
+                database.insert(self.room)
+                return f'Room update'
+            else:
+                return f'Room does not exist'

@@ -21,7 +21,7 @@ async def index(websocket, path: str):
                 user_device = json_response['device']
                 user_profile: dict = json_response['profile']
 
-                # confirm user account security
+                # ___________account traffic_____________
                 if path == "/":
                     accounts_parent_dir = os.listdir(f"{root_dir}/system/user/account")
                     # store all users found
@@ -79,29 +79,39 @@ async def index(websocket, path: str):
                         await websocket.send(str(authentication_result))
 
                 # pend deactivate account
-                elif path == "/deactivate":
-                    result = await RoomAccount(user_profile).deactivate()
+                elif path == "/delete":
+                    result = await RoomAccount(user_profile).delete()
                     if 'does not exist' in result:
                         await websocket.send(str(result))
                         await websocket.close()
                     else:
                         await websocket.send(str(result))
 
+                # unrecognized path / route
+                else:
+                    pass  # pass route to room-traffic
+                # ___________account traffic_____________
+
                 # ___________room traffic_____________
-                elif path == f"/user/{user_profile['username']}/room/new":
+                if f"/{user_profile['username']}/room" in path:
                     authentication_result = await RoomAccount(user_profile).authenticate()
                     if 'does not exist' in authentication_result:
                         await websocket.send(str(authentication_result))
                         await websocket.close()
-                    else:
-                        room_response = Rooms(user_profile, json_response['room']).new_room()
-                        await websocket.send(str(room_response))
-                # ___________room traffic_____________
 
-                # unrecognized path / route
-                else:
-                    await websocket.send('Unknown address! Use \'/\' instead.')
-                    await websocket.close()
+                    elif 'Access granted' in authentication_result:
+                        if path == f"/{user_profile['username']}/room/new":
+                            room_response = Rooms(user_profile, json_response['room']).new_room()
+                            await websocket.send(room_response)
+                        elif path == f"/{user_profile['username']}/room/delete":
+                            room_response = Rooms(user_profile, json_response['room']).delete_room()
+                            await websocket.send(room_response)
+                        elif path == f"/{user_profile['username']}/room/update":
+                            room_response = Rooms(user_profile, json_response['room']).update_room()
+                            await websocket.send(room_response)
+                    else:
+                        await websocket.send(str(authentication_result))
+                # ___________room traffic_____________
 
             # if data is not type(dict)
             except json.decoder.JSONDecodeError as error:
