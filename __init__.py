@@ -1,6 +1,8 @@
+from tinydb import TinyDB
 import websockets
 import websockets.exceptions
 import json
+import shutil
 import asyncio
 import bcrypt
 import datetime

@@ -8,6 +8,8 @@ PORT = '5000'
 async def index(websocket, path: str):
     # on client's connection
     user_remote_address: tuple = websocket.remote_address
+    # server work directory
+    root_dir = os.getcwd()
 
     try:
         async for data in websocket:
@@ -21,13 +23,30 @@ async def index(websocket, path: str):
 
                 # confirm user account security
                 if path == "/":
-                    result = await RoomAccount(user_profile).authenticate()
+                    accounts_parent_dir = os.listdir(f"{root_dir}/system/user/account")
+                    # store all users found
+                    users_from_all_databases = []
 
-                    if 'Access denied' in result:
-                        await websocket.send(str(result))
-                        await websocket.close()
-                    else:
-                        await websocket.send(str(result))
+                    for directory in accounts_parent_dir:
+                        os.chdir(f'{root_dir}/system/user/account/{directory}')
+                        if os.path.isfile(f'{directory}.json'):
+                            database = TinyDB(f'{directory}.json').table('profile')
+                            # user profile with minimum data
+                            user_profile = {
+                                'username': database.all()[0]['username'],
+                                'email': database.all()[0]['email'],
+                                'country': database.all()[0]['country'],
+                                'race': database.all()[0]['race'],
+                                'hobbies': database.all()[0]['hobbies'],
+                                'health': database.all()[0]['health'],
+                            }
+                            users_from_all_databases.append(user_profile)
+                        else:
+                            shutil.rmtree(f'{root_dir}/system/user/account/{directory}')
+                        # restore root directory
+                        os.chdir(root_dir)
+                    # send users to client
+                    await websocket.send(str(users_from_all_databases))
 
                 # create new account
                 elif path == "/signup":
