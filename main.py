@@ -88,13 +88,14 @@ async def index(websocket, path: str):
                         await websocket.send(str(result))
 
                 # ___________room traffic_____________
-                elif path == f"/user/{user_profile['username']}/room":
-                    authentication_result = await RoomAccount(user_profile).deactivate()
+                elif path == f"/user/{user_profile['username']}/room/new":
+                    authentication_result = await RoomAccount(user_profile).authenticate()
                     if 'does not exist' in authentication_result:
-                        await websocket.send(str(result))
+                        await websocket.send(str(authentication_result))
                         await websocket.close()
                     else:
-                        await websocket.send(str(result))
+                        room_response = Rooms(user_profile, json_response['room']).new_room()
+                        await websocket.send(str(room_response))
                 # ___________room traffic_____________
 
                 # unrecognized path / route
