@@ -14,36 +14,51 @@ async def index(websocket, path: str):
             try:
                 # convert "data" to "dict"
                 json_response: dict = json.loads(data)
-                # assign value "profile" to json_profile
+
+                # specific user data
+                user_device = json_response['device']
                 user_profile: dict = json_response['profile']
 
-                # create new user account
+                # confirm user account security
                 if path == "/":
                     result = await RoomAccount(user_profile).authenticate()
-                    await websocket.send(str(result))
 
+                    if 'Access denied' in result:
+                        await websocket.send(str(result))
+                        await websocket.close()
+                    else:
+                        await websocket.send(str(result))
+
+                # create new account
                 elif path == "/signup":
                     result = await RoomAccount(user_profile).create()
                     await websocket.send(str(result))
 
+                # sign in to account
                 elif path == "/signin":
                     await RoomAccount(user_profile).authenticate()
 
+                # pend deactivate account
                 elif path == "/deactivate":
                     result = await RoomAccount(user_profile).deactivate()
-                    await websocket.send(str(result))
+                    if 'does not exist' in result:
+                        await websocket.send(str(result))
+                        await websocket.close()
+                    else:
+                        await websocket.send(str(result))
 
+                # unrecognized path / route
                 else:
-                    await websocket.send('Unknown path!')
+                    await websocket.send('Unknown address! User \'/\' instead.')
+                    await websocket.close()
 
             # if data is not type(dict)
             except json.decoder.JSONDecodeError as error:
-                print(f'[DATA TYPE]: {error}')
-                return error
+                await websocket.send(f'Json error: {error}')
 
     # on client's disconnection
     except websockets.exceptions.ConnectionClosedError:
-        pass
+        print(user_remote_address, 'disconnected')
 
 
 # application server
@@ -54,5 +69,8 @@ async def rooms_server():
 
 # exec application
 if __name__ == '__main__':
-    print(f'Listening on {HOST}:{PORT}.')
-    asyncio.run(rooms_server())
+    try:
+        print(f'[Rooms]: Listening on (ws://{HOST}:{PORT}) OS:{sys.platform}.')
+        asyncio.run(rooms_server())
+    except KeyboardInterrupt:
+        print('[Rooms]: Server forced to stop.')

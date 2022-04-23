@@ -1,5 +1,3 @@
-import bcrypt
-
 from .__init__ import *
 
 
@@ -15,21 +13,21 @@ class RoomAccount:
     """
 
     def __init__(self, profile: dict):
-        self.profile = profile  # user's full profile
-        self.firstname = profile['firstname']
-        self.lastname = profile['lastname']
-        self.birth = profile['birth']
-        self.gender = profile['gender']
-        self.email = profile['email']
+        self.profile: dict = profile  # user's full profile
+        self.firstname: str = profile['firstname']
+        self.lastname: str = profile['lastname']
+        self.birth: str = profile['birth']
+        self.gender: str = profile['gender']
+        self.email: str = profile['email']
         self.password: str = profile['password']
-        self.username = profile['username']
-        self.country = profile['country']
-        self.race = profile['race']
-        self.hobbies = profile['hobbies']
-        self.health = profile['health']
+        self.username: str = profile['username']
+        self.country: list = profile['country']
+        self.race: str = profile['race']
+        self.hobbies: list = profile['hobbies']
+        self.health: list = profile['health']
 
         # current work directory
-        self.account_directory = f'system/user/account/{self.email}'
+        self.account_directory: str = f'system/user/account/{self.email}'
 
     # create new user account
     async def create(self):
@@ -40,7 +38,7 @@ class RoomAccount:
                 return 'Account exists'
         except FileNotFoundError:
             if not os.path.exists(self.account_directory):
-                os.makedirs(f'{self.account_directory}')
+                os.makedirs(self.account_directory)
                 os.chdir(self.account_directory)  # change work directory
 
                 # database
@@ -49,9 +47,9 @@ class RoomAccount:
                 # restore work dir to root_dir
                 os.chdir(root_dir)
                 return 'Account generated'
-
-            # restore work dir to root_dir
-            os.chdir(root_dir)
+            else:
+                shutil.rmtree(self.account_directory)
+                return 'Account-dir exists but not account-file \"Dir removed!\" signup again'
 
     # update user's account values
     async def update(self):
@@ -69,21 +67,31 @@ class RoomAccount:
             local_password = database.table('profile').all()[0]['password'].encode('utf-8')
 
             # compare hashed passwords
-            if bcrypt.checkpw(input_password, local_password):
-                return 'Authentication successful'
-            elif ValueError:
-                return 'Authentication failure'
+            try:
+                if input_password == local_password:
+                    return 'Access granted'
+                else:
+                    return 'Access denied: incorrect password'
+            except ValueError as error:
+                return f'Access denied: {error}. \"Password not hashed\"'
 
         else:
-            return 'Account does not exist'
+            if os.path.exists(self.account_directory):
+                shutil.rmtree(self.account_directory)
+                return 'Account-dir exists but not account-file \"Dir removed!\" signup again'
+            else:
+                return 'Account does not exist'
 
     # pend account for deactivation
     async def deactivate(self):
-        if await self.authenticate() == 'Authentication successful':
-            if os.path.exists(self.account_directory):
+        # confirm user security
+        if os.path.exists(self.account_directory):
+            # confirm user security
+            if 'Access granted' in await self.authenticate():
                 shutil.rmtree(self.account_directory)
                 return 'Account deactivated'
             else:
-                return 'Account does not exist'
+                return 'Access denied'
         else:
-            return 'Authentication failure'
+            return 'Account does not exist'
+
