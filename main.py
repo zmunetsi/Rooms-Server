@@ -53,9 +53,30 @@ async def index(websocket, path: str):
                     result = await RoomAccount(user_profile).create()
                     await websocket.send(str(result))
 
-                # sign in to account
-                elif path == "/signin":
-                    await RoomAccount(user_profile).authenticate()
+                # log in to account
+                elif path == "/login":
+                    authentication_result = await RoomAccount(user_profile).authenticate()
+
+                    # user account directory path
+                    account_directory_path = f'{root_dir}/system/user/account/{user_profile["email"]}'
+
+                    if 'does not exist' in authentication_result:
+                        await websocket.send(str(authentication_result))
+                        await websocket.close()
+                    elif 'Access granted' in authentication_result:
+                        database = TinyDB(f'{account_directory_path}/{user_profile["email"]}.json')
+
+                        # user profile
+                        profile = database.table('profile').all()[0]
+                        profile.pop('password')  # remove password for security purposes
+
+                        database_tables = {
+                            'profile': profile
+                        }
+                        # send everything from database to user/client
+                        await websocket.send(str(database_tables))
+                    else:
+                        await websocket.send(str(authentication_result))
 
                 # pend deactivate account
                 elif path == "/deactivate":
