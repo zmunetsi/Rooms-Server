@@ -69,8 +69,8 @@ async def index(websocket, path: str):
                         database = TinyDB(f'{account_directory_path}/{user_profile["username"]}.json')
 
                         # user profile
-                        profile = database.table('profile').all()
-                        profile[0].pop('password')  # remove password for security purposes
+                        profile = database.table('profile').all()[0]
+                        profile.pop('password')  # remove password for security purposes
 
                         database_tables = {
                             'profile': profile
