@@ -42,9 +42,11 @@ async def index(websocket, path: str):
                 if users_from_all_databases:
                     await websocket.send(str(users_from_all_databases))
                     await websocket.close()
+                    break
                 else:
                     await websocket.send('No user found')
                     await websocket.close()
+                    break
 
             # requires request in json format
             try:
