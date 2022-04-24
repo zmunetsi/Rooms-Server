@@ -119,6 +119,8 @@ async def index(websocket, path: str):
                             await websocket.close()
                     else:
                         await websocket.send(str(authentication_result))
+                else:
+                    pass
                 # ___________room traffic_____________
 
             # if data is not type(dict)
