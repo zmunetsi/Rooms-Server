@@ -1,3 +1,5 @@
+import bcrypt
+
 from .__init__ import *
 
 
@@ -43,6 +45,10 @@ class RoomAccount:
 
                 # database
                 database = TinyDB(f'{self.username}.json')
+
+                # HASH USER PASSWORD
+                self.profile['password'] = bcrypt.hashpw(self.profile["password"].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
                 database.table('profile').insert(self.profile)
                 # restore work dir to root_dir
                 os.chdir(root_dir)
@@ -64,11 +70,11 @@ class RoomAccount:
 
             # passwords
             input_password = self.password.encode('utf-8')
-            local_password = database.table('profile').all()[0]['password'].encode('utf-8')
+            local_password: str = database.table('profile').all()[0]['password'].encode('utf-8')
 
             # compare hashed passwords
             try:
-                if input_password == local_password:
+                if bcrypt.checkpw(input_password, local_password):
                     return 'Access granted'
                 else:
                     return 'Access denied: incorrect password'
