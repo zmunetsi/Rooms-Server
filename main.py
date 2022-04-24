@@ -99,6 +99,7 @@ async def index(websocket, path: str):
                     authentication_result = await RoomAccount(user_profile).authenticate()
                     if 'does not exist' in authentication_result:
                         await websocket.send(str(authentication_result))
+                        print(authentication_result)
                         await websocket.close()
 
                     elif 'Access granted' in authentication_result:
@@ -115,7 +116,7 @@ async def index(websocket, path: str):
                             room_response = Rooms(user_profile, json_response['room']).get_rooms()
                             await websocket.send(str(room_response))
                         else:
-                            pass
+                            await websocket.close()
                     else:
                         await websocket.send(str(authentication_result))
                 # ___________room traffic_____________
