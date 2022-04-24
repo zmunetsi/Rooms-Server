@@ -13,6 +13,38 @@ async def index(websocket, path: str):
 
     try:
         async for data in websocket:
+
+            # accessible without any request to path "/"
+            if path == "/":
+                accounts_parent_dir = os.listdir(f"{root_dir}/system/user/account")
+                # store all users found
+                users_from_all_databases = []
+
+                for directory in accounts_parent_dir:
+                    os.chdir(f'{root_dir}/system/user/account/{directory}')
+                    if os.path.isfile(f'{directory}.json'):
+                        database = TinyDB(f'{directory}.json').table('profile')
+                        # user profile with minimum data
+                        user_profile = {
+                            'username': database.all()[0]['username'],
+                            'email': database.all()[0]['email'],
+                            'country': database.all()[0]['country'],
+                            'race': database.all()[0]['race'],
+                            'hobbies': database.all()[0]['hobbies'],
+                            'health': database.all()[0]['health'],
+                        }
+                        users_from_all_databases.append(user_profile)
+                    else:
+                        shutil.rmtree(f'{root_dir}/system/user/account/{directory}')
+                    # restore root directory
+                    os.chdir(root_dir)
+                # send users to client
+                if users_from_all_databases:
+                    await websocket.send(str(users_from_all_databases))
+                else:
+                    await websocket.send('No user found')
+
+            # requires request in json format
             try:
                 # convert "data" to "dict"
                 json_response: dict = json.loads(data)
@@ -22,36 +54,8 @@ async def index(websocket, path: str):
                 user_profile: dict = json_response['profile']
 
                 # ___________account traffic_____________
-                if path == "/":
-                    accounts_parent_dir = os.listdir(f"{root_dir}/system/user/account")
-                    # store all users found
-                    users_from_all_databases = []
-
-                    for directory in accounts_parent_dir:
-                        os.chdir(f'{root_dir}/system/user/account/{directory}')
-                        if os.path.isfile(f'{directory}.json'):
-                            database = TinyDB(f'{directory}.json').table('profile')
-                            # user profile with minimum data
-                            user_profile = {
-                                'username': database.all()[0]['username'],
-                                'email': database.all()[0]['email'],
-                                'country': database.all()[0]['country'],
-                                'race': database.all()[0]['race'],
-                                'hobbies': database.all()[0]['hobbies'],
-                                'health': database.all()[0]['health'],
-                            }
-                            users_from_all_databases.append(user_profile)
-                        else:
-                            shutil.rmtree(f'{root_dir}/system/user/account/{directory}')
-                        # restore root directory
-                        os.chdir(root_dir)
-                    # send users to client
-                    if users_from_all_databases:
-                        await websocket.send(str(users_from_all_databases))
-                    else:
-                        await websocket.send('No user found')
                 # create new account
-                elif path == "/signup":
+                if path == "/signup":
                     result = await RoomAccount(user_profile).create()
                     await websocket.send(str(result))
 
