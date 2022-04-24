@@ -11,7 +11,7 @@ class Rooms:
         self.room_author: str = room_content['author']
 
         # user "rooms" database instance
-        self.database_file: str = f'system/user/account/{self.user["email"]}/{self.user["email"]}.json'
+        self.database_file: str = f'system/user/account/{self.user["username"]}/{self.user["username"]}.json'
 
     def new_room(self):
         if os.path.isfile(self.database_file):

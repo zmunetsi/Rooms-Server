@@ -60,13 +60,13 @@ async def index(websocket, path: str):
                     authentication_result = await RoomAccount(user_profile).authenticate()
 
                     # user account directory path
-                    account_directory_path = f'{root_dir}/system/user/account/{user_profile["email"]}'
+                    account_directory_path = f'{root_dir}/system/user/account/{user_profile["username"]}'
 
                     if 'does not exist' in authentication_result:
                         await websocket.send(str(authentication_result))
                         await websocket.close()
                     elif 'Access granted' in authentication_result:
-                        database = TinyDB(f'{account_directory_path}/{user_profile["email"]}.json')
+                        database = TinyDB(f'{account_directory_path}/{user_profile["username"]}.json')
 
                         # user profile
                         profile = database.table('profile').all()

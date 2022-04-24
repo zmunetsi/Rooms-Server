@@ -27,14 +27,14 @@ class RoomAccount:
         self.health: list = profile['health']
 
         # current work directory
-        self.account_directory: str = f'system/user/account/{self.email}'
+        self.account_directory: str = f'system/user/account/{self.username}'
 
     # create new user account
     async def create(self):
         # main current work directory
         root_dir = os.getcwd()
         try:
-            with open(f'{self.account_directory}/{self.email}.json'):
+            with open(f'{self.account_directory}/{self.username}.json'):
                 return 'Account exists'
         except FileNotFoundError:
             if not os.path.exists(self.account_directory):
@@ -42,7 +42,7 @@ class RoomAccount:
                 os.chdir(self.account_directory)  # change work directory
 
                 # database
-                database = TinyDB(f'{self.email}.json')
+                database = TinyDB(f'{self.username}.json')
                 database.table('profile').insert(self.profile)
                 # restore work dir to root_dir
                 os.chdir(root_dir)
@@ -57,7 +57,7 @@ class RoomAccount:
 
     # confirm user's security
     async def authenticate(self):
-        file = f'{self.account_directory}/{self.email}.json'
+        file = f'{self.account_directory}/{self.username}.json'
 
         if os.path.exists(file):
             database = TinyDB(file)
