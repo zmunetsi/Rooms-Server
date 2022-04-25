@@ -7,8 +7,8 @@ class Rooms:
     def __init__(self, user: dict, room_content: dict):
         self.user: dict = user
         self.room: dict = room_content
-        self.id: str = room_content['id']
-        self.room_author: str = self.user['username']
+        self.id: str = f'{user["username"]}-{room_content["title"]}'  # username-roomtitle
+        self.room_author: str = room_content['author']
 
         # user "rooms" database instance
         self.database_file: str = f'system/user/account/{self.user["username"]}/{self.user["username"]}.json'
