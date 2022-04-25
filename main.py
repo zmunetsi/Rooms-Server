@@ -102,6 +102,21 @@ async def index(websocket, path: str):
                     pass  # pass route to room-traffic
                 # ___________account traffic_____________
 
+                # __________USER_SEARCH TRAFFIC__________
+                if path == "/search/roommates":
+                    authentication_result = await RoomAccount(user_profile).authenticate()
+
+                    if 'Access granted' in authentication_result:
+                        search_value = json_response['search_value']
+                        search_result = Search().from_roommates(user_profile['username'], search_value)
+                        await websocket.send(str(search_result))
+                    elif 'does not exist' in authentication_result:
+                        await websocket.send(str(authentication_result))
+                        await websocket.close()
+                    else:
+                        await websocket.send(authentication_result)
+                # __________USER_SEARCH TRAFFIC__________
+
                 # ___________room traffic_____________
                 if f"/{user_profile['username']}/room" in path:
                     authentication_result = await RoomAccount(user_profile).authenticate()
