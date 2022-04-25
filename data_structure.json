@@ -1,0 +1,40 @@
+{
+    // USER LOG-IN DEVICE | REQUIRED ON USER LOGIN
+    "device": {"id":"","ip_address":"192.168.41.102"},
+
+
+    // USER PROFILE | REQUIRED ON USER AUTHENTICATION | signup, login, update, authentication, delete
+    "profile": {"firstname": "manelisi", "lastname": "motha", "birth": "2001/05/12", "gender": "male", "email": "manemotha@gmail.com", "password": "12345678", "username": "manemotha", "country": "zimbabwe", "race": "african", "hobbies": ["coding", "movies", "food"], "health": ["flu", "cancer"], "account-date": "2011/12/30"},
+
+
+    // ALL USER ROOMS | FUNCTIONS = NEW_ROOM, UPDATE_ROOM, DELETE_ROOM
+    "rooms":[{"id":"manemotha-getto","title":"getto", "author":"manemotha","description":"talking more about history of black people","tags":["african","getto","history"],"date":"2019/09/01",
+        
+        // created on like_room | removed on unlike_room
+        "conversation": [{"firstname": "manelisi","lastname": "motha","username":"manemotha","message":"hello mate","quote":"hello my roommates","date":"2019/09/01","time":"12:90"}],
+
+        // created on request_accepted | removed on leave_room
+        "roommates": [{"firstname": "manelisi","lastname": "motha","username":"manemotha","country":"south africa","race":"african","hobbies": ["coding", "movies", "food"], "health": ["flu", "cancer"]}],
+
+        // created on join_request | removed on join_request_cancel
+        "requests": [{"firstname": "manelisi","lastname": "motha","username":"manemotha","country":"south africa","race":"african","date":"2019/09/01","time":"12:90"}],
+
+        // created on like_room | removed on unlike_room
+        "likes": [{"firstname": "manelisi","lastname": "motha","username":"manemotha","country":"south africa","race":"african","hobbies": ["coding", "movies", "food"], "health": ["flu", "cancer"],"date":"2019/09/01","time":"12:90"}],
+
+        // created on comment | removed on delete_comment
+        "comments": [{"firstname": "manelisi","lastname": "motha","username":"manemotha","message":"this is a comment","quote":"i think this is a comment","date":"2019/09/01","time":"12:90"}],
+
+        // created on block | removed on unblock
+        "blocked": [{"firstname": "manelisi","lastname": "motha","username":"manemotha"}],
+        
+    }],
+
+
+
+    /////////////////////////////////////////////////// CLIENT FUNCTIONS ///////////////////////////////////////////////////
+    
+
+    // USER ROOM | FUNCTION = NEW_ROOM, UPDATE_ROOM, DELETE_ROOM
+    "room": {"id":"manemotha-getto","title":"getto", "author":"manemotha","description":"talking more about history of black people","tags":["african","getto","history"],"date":"2019/09/01"},
+}
