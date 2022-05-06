@@ -18,7 +18,7 @@ class RoomAccount:
         self.profile: dict = profile  # user's full profile
         self.email: str = profile['email']
         self.password: str = profile['password']
-        self.username: str = profile['username'].lower()  # lower case
+        self.username: str = profile['username']
 
         # current work directory
         self.account_directory: str = f'system/user/account/{self.username}'
