@@ -16,17 +16,9 @@ class RoomAccount:
 
     def __init__(self, profile: dict):
         self.profile: dict = profile  # user's full profile
-        self.firstname: str = profile['firstname']
-        self.lastname: str = profile['lastname']
-        self.birth: str = profile['birth']
-        self.gender: str = profile['gender']
         self.email: str = profile['email']
         self.password: str = profile['password']
         self.username: str = profile['username']
-        self.country: list = profile['country']
-        self.race: str = profile['race']
-        self.hobbies: list = profile['hobbies']
-        self.health: list = profile['health']
 
         # current work directory
         self.account_directory: str = f'system/user/account/{self.username}'
