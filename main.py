@@ -60,6 +60,9 @@ async def index(websocket, path: str):
                 user_device = json_response['device']
                 user_profile: dict = json_response['profile']
 
+                # ENSURE USERNAME IS LOWERCASE
+                user_profile['username'] = user_profile['username'].lower()
+
                 # ENSURE ACCOUNT VALUES ARE NOT EMPTY
                 account_values = [user_profile['email'], user_profile['password'], user_profile['username']]
                 for value in account_values:
