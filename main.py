@@ -1,6 +1,6 @@
 from __init__ import *
 
-HOST = '127.0.0.1'
+HOST = '0.0.0.0'
 PORT = '5000'
 
 
@@ -59,6 +59,14 @@ async def index(websocket, path: str):
                 # specific user data
                 user_device = json_response['device']
                 user_profile: dict = json_response['profile']
+
+                # ENSURE ACCOUNT VALUES ARE NOT EMPTY
+                account_values = [user_profile['email'], user_profile['password'], user_profile['username']]
+                for value in account_values:
+                    if not value:
+                        await websocket.send("Empty account value")
+                        await websocket.close()
+                        return None
 
                 # ___________account traffic_____________
                 # create new account
