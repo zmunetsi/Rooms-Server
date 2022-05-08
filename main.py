@@ -57,7 +57,6 @@ async def index(websocket, path: str):
                 json_response: dict = json.loads(data)
 
                 # specific user data
-                user_device = json_response['device']
                 user_profile: dict = json_response['profile']
 
                 # ENSURE USERNAME IS LOWERCASE
