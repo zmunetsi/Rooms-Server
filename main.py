@@ -25,15 +25,14 @@ async def index(websocket, path: str):
                         os.chdir(f'{root_dir}/system/user/account/{directory}')
                         if os.path.isfile(f'{directory}.json'):
                             database = TinyDB(f'{directory}.json').table('profile')
+
                             # user profile with minimum data
-                            user_profile = {
-                                'username': database.all()[0]['username'],
-                                'email': database.all()[0]['email'],
-                                'country': database.all()[0]['country'],
-                                'race': database.all()[0]['race'],
-                                'hobbies': database.all()[0]['hobbies'],
-                                'health': database.all()[0]['health'],
-                            }
+                            user_profile = database.all()[0]
+
+                            # remove password from expose profile
+                            user_profile.pop("password")
+
+                            # append results
                             users_from_all_databases.append(user_profile)
                         else:
                             shutil.rmtree(f'{root_dir}/system/user/account/{directory}')
