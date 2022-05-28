@@ -96,10 +96,13 @@ async def index(websocket, path: str):
                         await websocket.send(str(authentication_result))
                         await websocket.close()
                     elif 'Access granted' in authentication_result:
-                        database = TinyDB(f'{account_directory_path}/{user_profile["username"]}.json')
+                        database = sqlite3.connect(f'{account_directory_path}/{user_profile["username"]}.db')
+                        cursor = database.cursor()
 
                         # user profile
-                        profile = database.table('profile').all()[0]
+                        profile: dict = json.loads(cursor.execute("""
+                            select json_extract(data, '$') from profile;
+                            """).fetchone()[0])
                         profile.pop('password')  # remove password for security purposes
 
                         database_tables = {
