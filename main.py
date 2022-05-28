@@ -74,6 +74,14 @@ async def index(websocket, path: str):
                     await websocket.close()
                     return None
 
+                # check for unwanted characters in username
+                for char in user_profile['username']:
+                    chars: str = "abcdefghijklmnopqrstuvwxyz_0123456789"
+                    if char not in chars:
+                        await websocket.send("Unwanted character in username")
+                        await websocket.close()
+                        return None
+
                 # ___________account traffic_____________
                 # create new account
                 if path == "/signup":
