@@ -78,7 +78,12 @@ async def index(websocket, path: str):
                 # create new account
                 if path == "/signup":
                     result = await RoomAccount(user_profile).create()
-                    await websocket.send(str(result))
+
+                    if result == "Account exists":
+                        await websocket.send(str(result))
+                        await websocket.close()
+                    else:
+                        await websocket.send(str(result))
 
                 # log in to account
                 elif path == "/login":
