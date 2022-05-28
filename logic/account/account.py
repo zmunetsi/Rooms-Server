@@ -26,7 +26,7 @@ class RoomAccount:
         # main current work directory
         root_dir = os.getcwd()
         try:
-            with open(f'{self.account_directory}/{self.username}.json'):
+            with open(f'{self.account_directory}/{self.username}.db'):
                 return 'Account exists'
         except FileNotFoundError:
             if not os.path.exists(self.account_directory):
