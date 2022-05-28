@@ -87,7 +87,7 @@ async def index(websocket, path: str):
                 if path == "/signup":
                     result = await RoomAccount(user_profile).create()
 
-                    if result == "Account exists":
+                    if result == account_exists_true:
                         await websocket.send(str(result))
                         await websocket.close()
                     elif result == "Unwanted character in username":
@@ -103,10 +103,10 @@ async def index(websocket, path: str):
                     # user account directory path
                     account_directory_path = f'{root_dir}/system/user/account/{user_profile["username"]}'
 
-                    if 'does not exist' in authentication_result:
+                    if authentication_result == account_exists_false:
                         await websocket.send(str(authentication_result))
                         await websocket.close()
-                    elif 'Access granted' in authentication_result:
+                    elif authentication_result == account_access_granted:
                         database = sqlite3.connect(f'{account_directory_path}/{user_profile["username"]}.db')
                         cursor = database.cursor()
 
@@ -127,7 +127,7 @@ async def index(websocket, path: str):
                 # pend deactivate account
                 elif path == "/delete":
                     result = await RoomAccount(user_profile).delete()
-                    if 'does not exist' in result:
+                    if result == account_exists_false:
                         await websocket.send(str(result))
                         await websocket.close()
                     else:
@@ -142,11 +142,11 @@ async def index(websocket, path: str):
                 if path == "/search/roommates":
                     authentication_result = await RoomAccount(user_profile).authenticate()
 
-                    if 'Access granted' in authentication_result:
+                    if authentication_result == account_access_granted:
                         search_value = json_response['search_value']
                         search_result = Search().from_roommates(user_profile['username'], search_value)
                         await websocket.send(str(search_result))
-                    elif 'does not exist' in authentication_result:
+                    elif authentication_result == account_exists_false:
                         await websocket.send(str(authentication_result))
                         await websocket.close()
                     else:
@@ -156,12 +156,12 @@ async def index(websocket, path: str):
                 # ___________room traffic_____________
                 if f"/{user_profile['username']}/room" in path:
                     authentication_result = await RoomAccount(user_profile).authenticate()
-                    if 'does not exist' in authentication_result:
+                    if authentication_result == account_exists_false:
                         await websocket.send(str(authentication_result))
                         print(authentication_result)
                         await websocket.close()
 
-                    elif 'Access granted' in authentication_result:
+                    elif authentication_result == account_access_granted:
                         if path == f"/{user_profile['username']}/room/new":
                             room_response = Rooms(user_profile, json_response['room']).new_room()
                             await websocket.send(room_response)

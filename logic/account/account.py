@@ -27,7 +27,7 @@ class RoomAccount:
         root_dir = os.getcwd()
         try:
             with open(f'{self.account_directory}/{self.username}.db'):
-                return 'Account exists'
+                return account_exists_true
         except FileNotFoundError:
             if not os.path.exists(self.account_directory):
                 os.makedirs(self.account_directory)
@@ -50,10 +50,10 @@ class RoomAccount:
 
                 # restore work dir to root_dir
                 os.chdir(root_dir)
-                return 'Account generated'
+                return account_generated_true
             else:
                 shutil.rmtree(self.account_directory)
-                return 'Account-dir exists but not account-file \"Dir removed!\" signup again'
+                return account_dir_exists_restored
 
     # update user's account values
     async def update(self):
@@ -76,18 +76,18 @@ class RoomAccount:
             # compare hashed passwords
             try:
                 if bcrypt.checkpw(input_password, local_password):
-                    return 'Access granted'
+                    return account_access_granted
                 else:
-                    return 'Access denied: incorrect password'
+                    return account_access_denied_password
             except ValueError as error:
-                return f'Access denied: {error}. \"Password not hashed\"'
+                return account_access_denied_passwordhash
 
         else:
             if os.path.exists(self.account_directory):
                 shutil.rmtree(self.account_directory)
-                return 'Account-dir exists but not account-file \"Dir removed!\" signup again'
+                return account_dir_exists_restored
             else:
-                return 'Account does not exist'
+                return account_exists_false
 
     # pend account for deactivation
     async def delete(self):
@@ -96,9 +96,9 @@ class RoomAccount:
             # confirm user security
             if 'Access granted' in await self.authenticate():
                 shutil.rmtree(self.account_directory)
-                return 'Account deactivated'
+                return account_deactivated_true
             else:
-                return 'Access denied'
+                return account_access_denied_password
         else:
-            return 'Account does not exist'
+            return account_exists_false
 
