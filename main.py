@@ -67,12 +67,12 @@ async def index(websocket, path: str):
                 user_profile['username'] = user_profile['username'].lower()
 
                 # ENSURE ACCOUNT VALUES ARE NOT EMPTY
-                account_values = [user_profile['email'], user_profile['password'], user_profile['username']]
-                for value in account_values:
-                    if not value:
-                        await websocket.send("Empty account value")
-                        await websocket.close()
-                        return None
+                try:
+                    [user_profile['email'], user_profile['password'], user_profile['username']]
+                except KeyError:
+                    await websocket.send("Empty account value")
+                    await websocket.close()
+                    return None
 
                 # ___________account traffic_____________
                 # create new account
