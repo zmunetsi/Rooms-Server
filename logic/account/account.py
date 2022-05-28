@@ -61,14 +61,17 @@ class RoomAccount:
 
     # confirm user's security
     async def authenticate(self):
-        file = f'{self.account_directory}/{self.username}.json'
+        file = f'{self.account_directory}/{self.username}.db'
 
         if os.path.exists(file):
-            database = TinyDB(file)
+            database = sqlite3.connect(file)
+            cursor = database.cursor()
 
             # passwords
             input_password = self.password.encode('utf-8')
-            local_password: str = database.table('profile').all()[0]['password'].encode('utf-8')
+            local_password: str = cursor.execute("""
+            select json_extract(data, '$.password') from profile;
+            """).fetchone()
 
             # compare hashed passwords
             try:

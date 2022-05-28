@@ -1,3 +1,5 @@
+import json
+
 from __init__ import *
 
 HOST = '0.0.0.0'
@@ -23,11 +25,14 @@ async def index(websocket, path: str):
 
                     for directory in accounts_parent_dir:
                         os.chdir(f'{root_dir}/system/user/account/{directory}')
-                        if os.path.isfile(f'{directory}.json'):
-                            database = TinyDB(f'{directory}.json').table('profile')
+                        if os.path.isfile(f'{directory}.db'):
+                            database = sqlite3.connect(f'{directory}.db')
+                            cursor = database.cursor()
 
                             # user profile with minimum data
-                            user_profile = database.all()[0]
+                            user_profile: dict = json.loads(cursor.execute("""
+                            select json_extract(data, '$') from profile;
+                            """).fetchone()[0])
 
                             # remove password from expose profile
                             user_profile.pop("password")
