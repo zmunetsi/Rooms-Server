@@ -1,5 +1,3 @@
-import bcrypt
-
 from .__init__ import *
 
 
@@ -35,13 +33,21 @@ class RoomAccount:
                 os.makedirs(self.account_directory)
                 os.chdir(self.account_directory)  # change work directory
 
-                # database
-                database = TinyDB(f'{self.username}.json')
+                # sqlite database
+                database = sqlite3.connect(f'{self.username}.db')
+                cursor = database.cursor()
+                # create profile table
+                cursor.execute("""
+                CREATE TABLE profile (data json)
+                """)
 
                 # HASH USER PASSWORD
                 self.profile['password'] = bcrypt.hashpw(self.profile["password"].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-                database.table('profile').insert(self.profile)
+                # store in database
+                cursor.execute("insert into profile values (?)", [json.dumps(self.profile)])
+                database.commit()
+
                 # restore work dir to root_dir
                 os.chdir(root_dir)
                 return 'Account generated'

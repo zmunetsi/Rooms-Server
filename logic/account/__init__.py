@@ -8,6 +8,8 @@ import sys
 import os
 import shutil
 from zipfile import ZipFile
+import json
+import sqlite3
 
 # modules
 from logic import *
