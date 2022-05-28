@@ -9,3 +9,5 @@ account_dir_exists_restored: str = "account dir exists: true but not account \"d
 account_access_granted: str = "access granted"
 account_access_denied_password: str = "access denied: incorrect password"
 account_access_denied_passwordhash: str = "access denied: password not hashed \"account removed\""
+# character
+username_unwanted_character: str = "unwanted character in username"
