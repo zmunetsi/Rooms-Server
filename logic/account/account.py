@@ -30,6 +30,13 @@ class RoomAccount:
                 return 'Account exists'
         except FileNotFoundError:
             if not os.path.exists(self.account_directory):
+
+                # check for unwanted characters in username
+                for char in self.username:
+                    chars: str = "abcdefghijklmnopqrstuvwxyz_0123456789"
+                    if char not in chars:
+                        return "Unwanted character in username"
+
                 os.makedirs(self.account_directory)
                 os.chdir(self.account_directory)  # change work directory
 
