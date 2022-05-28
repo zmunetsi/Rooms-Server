@@ -71,7 +71,7 @@ class RoomAccount:
             input_password = self.password.encode('utf-8')
             local_password: str = cursor.execute("""
             select json_extract(data, '$.password') from profile;
-            """).fetchone()
+            """).fetchone()[0].encode('utf-8')
 
             # compare hashed passwords
             try:
