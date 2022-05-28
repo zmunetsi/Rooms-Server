@@ -78,7 +78,7 @@ async def index(websocket, path: str):
                 for char in user_profile['username']:
                     chars: str = "abcdefghijklmnopqrstuvwxyz_0123456789"
                     if char not in chars:
-                        await websocket.send("Unwanted character in username")
+                        await websocket.send(username_unwanted_character)
                         await websocket.close()
                         return None
 
