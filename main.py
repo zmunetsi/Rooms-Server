@@ -90,7 +90,7 @@ async def index(websocket, path: str):
                     if result == account_exists_true:
                         await websocket.send(str(result))
                         await websocket.close()
-                    elif result == "Unwanted character in username":
+                    elif result == username_unwanted_character:
                         await websocket.send(str(result))
                         await websocket.close()
                     else:
