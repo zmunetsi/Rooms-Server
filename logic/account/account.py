@@ -92,7 +92,7 @@ class RoomAccount:
     # pend account for deactivation
     async def deactivate(self):
         # confirm user security
-        if os.path.exists(self.account_directory):
+        if os.path.exists(f'{self.account_directory}/{self.username}.db'):
             # confirm user security
             if await self.authenticate() == account_access_granted:
                 shutil.rmtree(self.account_directory)
@@ -100,5 +100,9 @@ class RoomAccount:
             else:
                 return account_access_denied_password
         else:
-            return account_exists_false
+            if os.path.exists(self.account_directory):
+                shutil.rmtree(self.account_directory)
+                return account_dir_exists_restored
+            else:
+                return account_exists_false
 
