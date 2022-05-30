@@ -9,7 +9,7 @@ class RoomAccount:
     * create - Create new user directory.
     * update - Update user directory to new data.
     * authenticate - Confirm if user account exists -> false | true.
-    * remove - Remove/Delete user account directory permanently.
+    * deactivate - Pend user-account for deactivation after number of days.
     """
 
     def __init__(self, profile: dict):
@@ -90,11 +90,11 @@ class RoomAccount:
                 return account_exists_false
 
     # pend account for deactivation
-    async def delete(self):
+    async def deactivate(self):
         # confirm user security
         if os.path.exists(self.account_directory):
             # confirm user security
-            if 'Access granted' in await self.authenticate():
+            if await self.authenticate() == account_access_granted:
                 shutil.rmtree(self.account_directory)
                 return account_deactivated_true
             else:

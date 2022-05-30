@@ -125,8 +125,8 @@ async def index(websocket, path: str):
                         await websocket.send(str(authentication_result))
 
                 # pend deactivate account
-                elif path == "/delete":
-                    result = await RoomAccount(user_profile).delete()
+                elif path == "/deactivate":
+                    result = await RoomAccount(user_profile).deactivate()
                     if result == account_exists_false:
                         await websocket.send(str(result))
                         await websocket.close()
