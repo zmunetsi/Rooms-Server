@@ -98,10 +98,12 @@ class RoomAccount:
             if self.email != '':
                 try:
                     accounts_parent_dir = os.listdir(f"system/user/account")
+                    directory_index = 0
                     for directory in accounts_parent_dir:
                         if os.path.isdir(f'system/user/account/{directory}'):
                             os.chdir(f'system/user/account/{directory}')
                             if os.path.isfile(f'{directory}.db'):
+                                # database
                                 database = sqlite3.connect(f'{directory}.db')
                                 cursor = database.cursor()
 
@@ -119,6 +121,9 @@ class RoomAccount:
 
                                 TODO: "if no account have a matching email then return account_exists_false_value"
 
+                                # increment directory index
+                                directory_index += 1
+
                                 # check for account with matching email & password
                                 if user_profile['email']:
                                     if user_profile['email'] == self.email:
@@ -127,7 +132,8 @@ class RoomAccount:
                                                 "username": user_profile['username'],
                                                 "result": account_access_granted}
                                         else:
-                                            return {"result": account_access_denied_password}
+                                            if directory_index == len(accounts_parent_dir):
+                                                return {"result": account_access_denied_password}
                 except FileNotFoundError:
                     # account-dir does not exist
                     return {"result": account_exists_false}
