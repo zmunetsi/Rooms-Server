@@ -84,19 +84,21 @@ async def index(websocket, path: str):
                 # ___________account traffic_____________
                 # create new account
                 if path == "/signup":
-                    signup_result: dict = await RoomAccount(user_profile).create()
 
-                    if user_profile['username'] != "":
-                        if signup_result['result'] == account_exists_true:
-                            await websocket.send(str(signup_result))
-                            await websocket.close()
-                        elif signup_result['result'] == username_unwanted_character:
-                            await websocket.send(str(signup_result))
-                            await websocket.close()
-                        else:
-                            await websocket.send(str(signup_result))
+                    if len(user_profile['username']) >= 5:
+                        signup_result: dict = await RoomAccount(user_profile).create()
+
+                        if user_profile['username'] != "":
+                            if signup_result['result'] == account_exists_true:
+                                await websocket.send(str(signup_result))
+                                await websocket.close()
+                            elif signup_result['result'] == username_unwanted_character:
+                                await websocket.send(str(signup_result))
+                                await websocket.close()
+                            else:
+                                await websocket.send(str(signup_result))
                     else:
-                        await websocket.send(str({"result": "username empty"}))
+                        await websocket.send(str({"result": "username is length less than 5"}))
                         await websocket.close()
 
                 # log in to account
