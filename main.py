@@ -85,28 +85,28 @@ async def index(websocket, path: str):
                 # ___________account traffic_____________
                 # create new account
                 if path == "/signup":
-                    result = await RoomAccount(user_profile).create()
+                    signup_result: dict = await RoomAccount(user_profile).create()
 
-                    if result == account_exists_true:
-                        await websocket.send(str(result))
+                    if signup_result['result'] == account_exists_true:
+                        await websocket.send(str(signup_result['result']))
                         await websocket.close()
-                    elif result == username_unwanted_character:
-                        await websocket.send(str(result))
+                    elif signup_result['result'] == username_unwanted_character:
+                        await websocket.send(str(signup_result['result']))
                         await websocket.close()
                     else:
-                        await websocket.send(str(result))
+                        await websocket.send(str(signup_result['result']))
 
                 # log in to account
                 elif path == "/login":
-                    authentication_result = await RoomAccount(user_profile).authenticate()
+                    authentication_result: dict = await RoomAccount(user_profile).authenticate()
 
                     # user account directory path
                     account_directory_path = f'{root_dir}/system/user/account/{user_profile["username"]}'
 
-                    if authentication_result['authentication_result'] == account_exists_false:
-                        await websocket.send(str(authentication_result['authentication_result']))
+                    if authentication_result['result'] == account_exists_false:
+                        await websocket.send(str(authentication_result['result']))
                         await websocket.close()
-                    elif authentication_result['authentication_result'] == account_access_granted:
+                    elif authentication_result['result'] == account_access_granted:
                         user_account: str
                         if user_profile['username']:
                             user_account = user_profile['username']
@@ -130,16 +130,16 @@ async def index(websocket, path: str):
                         # send everything from database to user/client
                         await websocket.send(str(database_tables))
                     else:
-                        await websocket.send(str(authentication_result['authentication_result']))
+                        await websocket.send(str(authentication_result['result']))
 
                 # pend deactivate account
                 elif path == "/deactivate":
-                    result = await RoomAccount(user_profile).deactivate()
-                    if result == account_exists_false:
-                        await websocket.send(str(result))
+                    deactivation_result: dict = await RoomAccount(user_profile).deactivate()
+                    if deactivation_result['result'] == account_exists_false:
+                        await websocket.send(str(deactivation_result['result']))
                         await websocket.close()
                     else:
-                        await websocket.send(str(result))
+                        await websocket.send(str(deactivation_result['result']))
 
                 # unrecognized path / route
                 else:
