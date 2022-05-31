@@ -16,46 +16,6 @@ async def index(websocket, path: str):
     try:
         async for data in websocket:
 
-            # accessible without any request to path "/"
-            if path == "/":
-                try:
-                    accounts_parent_dir = os.listdir(f"{root_dir}/system/user/account")
-                    # store all users found
-                    users_from_all_databases = []
-
-                    for directory in accounts_parent_dir:
-                        os.chdir(f'{root_dir}/system/user/account/{directory}')
-                        if os.path.isfile(f'{directory}.db'):
-                            database = sqlite3.connect(f'{directory}.db')
-                            cursor = database.cursor()
-
-                            # user profile with minimum data
-                            user_profile: dict = json.loads(cursor.execute("""
-                            select json_extract(data, '$') from profile;
-                            """).fetchone()[0])
-
-                            # remove password from expose profile
-                            user_profile.pop("password")
-
-                            # append results
-                            users_from_all_databases.append(user_profile)
-                        else:
-                            shutil.rmtree(f'{root_dir}/system/user/account/{directory}')
-                        # restore root directory
-                        os.chdir(root_dir)
-                    # send users to client
-                    if users_from_all_databases:
-                        await websocket.send(str(users_from_all_databases))
-                        await websocket.close()
-                        break
-                    else:
-                        await websocket.send('No user found')
-                        await websocket.close()
-                        break
-                except FileNotFoundError:
-                    await websocket.send('No user found')
-
-            # requires request in json format
             try:
                 # convert "data" to "dict"
                 json_response: dict = json.loads(data)
@@ -65,6 +25,45 @@ async def index(websocket, path: str):
 
                 # ENSURE USERNAME IS LOWERCASE
                 user_profile['username'] = user_profile['username'].lower()
+
+                # accessible without any request to path "/"
+                if path == "/":
+                    try:
+                        accounts_parent_dir = os.listdir(f"{root_dir}/system/user/account")
+                        # store all users found
+                        users_from_all_databases = []
+
+                        for directory in accounts_parent_dir:
+                            os.chdir(f'{root_dir}/system/user/account/{directory}')
+                            if os.path.isfile(f'{directory}.db'):
+                                database = sqlite3.connect(f'{directory}.db')
+                                cursor = database.cursor()
+
+                                # user profile with minimum data
+                                user_profile: dict = json.loads(cursor.execute("""
+                                select json_extract(data, '$') from profile;
+                                """).fetchone()[0])
+
+                                # remove password from expose profile
+                                user_profile.pop("password")
+
+                                # append results
+                                users_from_all_databases.append(user_profile)
+                            else:
+                                shutil.rmtree(f'{root_dir}/system/user/account/{directory}')
+                            # restore root directory
+                            os.chdir(root_dir)
+                        # send users to client
+                        if users_from_all_databases:
+                            await websocket.send(str(users_from_all_databases))
+                            await websocket.close()
+                            break
+                        else:
+                            await websocket.send('No user found')
+                            await websocket.close()
+                            break
+                    except FileNotFoundError:
+                        await websocket.send('No user found')
 
                 # ENSURE ACCOUNT VALUES ARE NOT EMPTY
                 try:
@@ -97,7 +96,7 @@ async def index(websocket, path: str):
                         else:
                             await websocket.send(str(signup_result))
                     else:
-                        await websocket.send(str("username empty: true"))
+                        await websocket.send(str({"result": "username empty"}))
                         await websocket.close()
 
                 # log in to account
