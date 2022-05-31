@@ -87,14 +87,18 @@ async def index(websocket, path: str):
                 if path == "/signup":
                     signup_result: dict = await RoomAccount(user_profile).create()
 
-                    if signup_result['result'] == account_exists_true:
-                        await websocket.send(str(signup_result['result']))
-                        await websocket.close()
-                    elif signup_result['result'] == username_unwanted_character:
-                        await websocket.send(str(signup_result['result']))
-                        await websocket.close()
+                    if user_profile['username'] != "":
+                        if signup_result['result'] == account_exists_true:
+                            await websocket.send(str(signup_result['result']))
+                            await websocket.close()
+                        elif signup_result['result'] == username_unwanted_character:
+                            await websocket.send(str(signup_result['result']))
+                            await websocket.close()
+                        else:
+                            await websocket.send(str(signup_result['result']))
                     else:
-                        await websocket.send(str(signup_result['result']))
+                        await websocket.send(str("username empty: true"))
+                        await websocket.close()
 
                 # log in to account
                 elif path == "/login":
