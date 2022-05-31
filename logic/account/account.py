@@ -99,6 +99,11 @@ class RoomAccount:
                 try:
                     accounts_parent_dir = os.listdir(f"{databases_directory}")
                     directory_index = 0
+
+                    # if there is no account
+                    if len(accounts_parent_dir) == 0:
+                        return {"result": account_exists_false}
+
                     for directory in accounts_parent_dir:
                         if os.path.isdir(f'{databases_directory}/{directory}'):
                             os.chdir(f'{databases_directory}/{directory}')
