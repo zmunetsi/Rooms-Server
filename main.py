@@ -31,6 +31,14 @@ async def index(websocket, path: str):
                     await websocket.close()
                     return None
 
+                # check for unwanted characters in username
+                for char in user_profile['username']:
+                    chars: str = "abcdefghijklmnopqrstuvwxyz_0123456789"
+                    if char not in chars:
+                        await websocket.send(str({"result": username_unwanted_character}))
+                        await websocket.close()
+                        return None
+
                 # ENSURE USERNAME IS LOWERCASE
                 user_profile['username'] = user_profile['username'].lower()
 
@@ -72,14 +80,6 @@ async def index(websocket, path: str):
                             break
                     except FileNotFoundError:
                         await websocket.send('No user found')
-
-                # check for unwanted characters in username
-                for char in user_profile['username']:
-                    chars: str = "abcdefghijklmnopqrstuvwxyz_0123456789"
-                    if char not in chars:
-                        await websocket.send(str({"result": username_unwanted_character}))
-                        await websocket.close()
-                        return None
 
                 # ___________account traffic_____________
                 # create new account
