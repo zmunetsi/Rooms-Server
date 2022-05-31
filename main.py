@@ -103,11 +103,19 @@ async def index(websocket, path: str):
                     # user account directory path
                     account_directory_path = f'{root_dir}/system/user/account/{user_profile["username"]}'
 
-                    if authentication_result == account_exists_false:
-                        await websocket.send(str(authentication_result))
+                    if authentication_result['authentication_result'] == account_exists_false:
+                        await websocket.send(str(authentication_result['authentication_result']))
                         await websocket.close()
-                    elif authentication_result == account_access_granted:
-                        database = sqlite3.connect(f'{account_directory_path}/{user_profile["username"]}.db')
+                    elif authentication_result['authentication_result'] == account_access_granted:
+                        user_account: str
+                        if user_profile['username']:
+                            user_account = user_profile['username']
+                        else:
+                            username = authentication_result['username']
+                            user_account = username
+                            account_directory_path = f'{root_dir}/system/user/account/{username}'
+
+                        database = sqlite3.connect(f'{account_directory_path}/{user_account}.db')
                         cursor = database.cursor()
 
                         # user profile
@@ -122,7 +130,7 @@ async def index(websocket, path: str):
                         # send everything from database to user/client
                         await websocket.send(str(database_tables))
                     else:
-                        await websocket.send(str(authentication_result))
+                        await websocket.send(str(authentication_result['authentication_result']))
 
                 # pend deactivate account
                 elif path == "/deactivate":
