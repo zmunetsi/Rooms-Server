@@ -23,6 +23,14 @@ async def index(websocket, path: str):
                 # specific user data
                 user_profile: dict = json_response['profile']
 
+                # ENSURE ACCOUNT VALUES ARE NOT EMPTY
+                try:
+                    [user_profile['email'], user_profile['password'], user_profile['username']]
+                except KeyError:
+                    await websocket.send(str({"result": "empty account value"}))
+                    await websocket.close()
+                    return None
+
                 # ENSURE USERNAME IS LOWERCASE
                 user_profile['username'] = user_profile['username'].lower()
 
@@ -65,19 +73,11 @@ async def index(websocket, path: str):
                     except FileNotFoundError:
                         await websocket.send('No user found')
 
-                # ENSURE ACCOUNT VALUES ARE NOT EMPTY
-                try:
-                    [user_profile['email'], user_profile['password'], user_profile['username']]
-                except KeyError:
-                    await websocket.send("Empty account value")
-                    await websocket.close()
-                    return None
-
                 # check for unwanted characters in username
                 for char in user_profile['username']:
                     chars: str = "abcdefghijklmnopqrstuvwxyz_0123456789"
                     if char not in chars:
-                        await websocket.send(username_unwanted_character)
+                        await websocket.send(str({"result": username_unwanted_character}))
                         await websocket.close()
                         return None
 
