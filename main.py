@@ -45,12 +45,12 @@ async def index(websocket, path: str):
                 # accessible without any request to path "/"
                 if path == "/":
                     try:
-                        accounts_parent_dir = os.listdir(f"{root_dir}/system/user/account")
+                        accounts_parent_dir = os.listdir(f"{root_dir}/{databases_directory}")
                         # store all users found
                         users_from_all_databases = []
 
                         for directory in accounts_parent_dir:
-                            os.chdir(f'{root_dir}/system/user/account/{directory}')
+                            os.chdir(f'{root_dir}/{databases_directory}/{directory}')
                             if os.path.isfile(f'{directory}.db'):
                                 database = sqlite3.connect(f'{directory}.db')
                                 cursor = database.cursor()
@@ -66,7 +66,7 @@ async def index(websocket, path: str):
                                 # append results
                                 users_from_all_databases.append(user_profile)
                             else:
-                                shutil.rmtree(f'{root_dir}/system/user/account/{directory}')
+                                shutil.rmtree(f'{root_dir}/{databases_directory}/{directory}')
                             # restore root directory
                             os.chdir(root_dir)
                         # send users to client
@@ -106,7 +106,7 @@ async def index(websocket, path: str):
                     authentication_result: dict = await RoomAccount(user_profile).authenticate()
 
                     # user account directory path
-                    account_directory_path = f'{root_dir}/system/user/account/{user_profile["username"]}'
+                    account_directory_path = f'{root_dir}/{databases_directory}/{user_profile["username"]}'
 
                     if authentication_result['result'] == account_exists_false:
                         await websocket.send(str(authentication_result))
@@ -118,7 +118,7 @@ async def index(websocket, path: str):
                         else:
                             username = authentication_result['username']
                             user_account = username
-                            account_directory_path = f'{root_dir}/system/user/account/{username}'
+                            account_directory_path = f'{root_dir}/{databases_directory}/{username}'
 
                         database = sqlite3.connect(f'{account_directory_path}/{user_account}.db')
                         cursor = database.cursor()

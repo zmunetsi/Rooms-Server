@@ -11,3 +11,7 @@ account_access_denied_password: str = "access denied: incorrect password"
 account_access_denied_passwordhash: str = "access denied: password not hashed \"account removed\""
 # character
 username_unwanted_character: str = "unwanted character in username"
+
+# directory
+# accounts parent directory
+databases_directory = "database/accounts"

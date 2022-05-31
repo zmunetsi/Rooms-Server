@@ -24,7 +24,7 @@ class RoomAccount:
         self.username: str = profile['username']
 
         # current work directory
-        self.account_directory: str = f'system/user/account/{self.username}'
+        self.account_directory: str = f'{databases_directory}/{self.username}'
 
     # create new user account
     async def create(self):
@@ -97,11 +97,11 @@ class RoomAccount:
         else:
             if self.email != '':
                 try:
-                    accounts_parent_dir = os.listdir(f"system/user/account")
+                    accounts_parent_dir = os.listdir(f"{databases_directory}")
                     directory_index = 0
                     for directory in accounts_parent_dir:
-                        if os.path.isdir(f'system/user/account/{directory}'):
-                            os.chdir(f'system/user/account/{directory}')
+                        if os.path.isdir(f'{databases_directory}/{directory}'):
+                            os.chdir(f'{databases_directory}/{directory}')
                             if os.path.isfile(f'{directory}.db'):
                                 # database
                                 database = sqlite3.connect(f'{directory}.db')
