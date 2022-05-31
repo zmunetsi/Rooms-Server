@@ -13,5 +13,5 @@ import sqlite3
 
 # modules
 from logic import *
-from logic.results_values import *
+from logic.string_variables import *
 from .account import *
